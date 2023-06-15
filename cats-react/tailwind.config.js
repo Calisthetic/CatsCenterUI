@@ -8,8 +8,8 @@ module.exports = {
       colors:{
         'Main': '#FABC34',
       },
-      height: {
-        100: '500px'
+      maxHeight: {
+        100: 'calc(100vh - 100px)'
       },
       spacing: {
         '128': '32rem',
@@ -19,7 +19,11 @@ module.exports = {
         '4xl': '2rem',
       },
       gridTemplateRows: {
-        'checkCats': '48px minmax(200px, 2fr) 52px',
+        'checkCatsLG': '48px minmax(200px, 2fr) 52px',
+        'checkCats': 'min-content minmax(200px, 2fr)',
+      },
+      gridTemplateColumns: {
+        'checkCats': '67% 33%',
       }
     },
   },
