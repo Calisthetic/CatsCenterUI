@@ -1,9 +1,18 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './App.css';
+import Home from "./pages/Home";
+import CheckCats from "./pages/CheckCats";
+import NoPage from "./pages/NoPage";
 
 function App() {
   return (
-    <div className="App">
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<Home />} />
+        <Route path="CheckCats" element={<CheckCats />} />
+        <Route path="*" element={<NoPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
