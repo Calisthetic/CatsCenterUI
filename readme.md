@@ -29,5 +29,5 @@ npm i -D react-router-dom
 ## Docs
 
 - [create-react-app](https://create-react-app.dev/)
-- [Tailwind](https://tailwindcss.com/docs/installation)
+- [Tailwind](https://tailwindcss.com/docs/guides/create-react-app)
 - [React Router](https://www.w3schools.com/react/react_router.asp)
