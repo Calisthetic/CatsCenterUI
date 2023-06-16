@@ -3,13 +3,17 @@ import { useEffect, useRef, useState } from "react";
 const apiUrl = "https://localhost:7288/api/"
 
 const CheckCats = () => {
-  let currentImageSrc
 
   let currentCatId = useRef(10000);
   const catIdRef = useRef();
   
   const [currentCatImage, setCurrentCatImage] = useState(apiUrl + "Cats/" + currentCatId.current + ".jpeg");
   const [catInfoData, setCatInfoData] = useState([{}]);
+  useEffect(() => {
+    fetch(apiUrl + "Cats/Info/" + currentCatId.current, {method: 'GET'})
+    .then(response => response.json())
+    .then(data => setCatInfoData(data))
+  }, []);
 
   const [categoriesData, setCategoriesData] = useState([{}])
   useEffect(() => {
@@ -19,37 +23,32 @@ const CheckCats = () => {
   }, []);
 
   async function RefreshCat() {
-    await fetch(apiUrl + "Cats/Info/" + currentCatId.current, {
-      method: 'GET',
-    }).then(response => response.json())
-      .then(json => {setCatInfoData(json)})
-      .catch(error => console.log('Failed: ' + error.message));
-    currentImageSrc = apiUrl + "Cats/" + currentCatId.current + ".jpeg"
-    setCurrentCatImage(currentImageSrc)
+    if (Number.isInteger(currentCatId.current) && currentCatId.current > 0) {
+      await fetch(apiUrl + "Cats/Info/" + currentCatId.current, {
+        method: 'GET',
+      }).then(response => response.json())
+        .then(json => {setCatInfoData(json)})
+        .catch(error => console.log('Failed: ' + error.message));
+      setCurrentCatImage(apiUrl + "Cats/" + currentCatId.current + ".jpeg")
+    }
   }
   function OnCatIdChanged() {
     currentCatId.current = (parseInt(catIdRef.current.value))
-    setTimeout(() => {
-      RefreshCat()
-    }, 500);
+    RefreshCat()
   }
   function OnCategoryClick(e) {
     let ctg_id = parseInt(e.target.id.split('_')[1])
-    let currentCategoryId
-    for (let i = 0; i < categoriesData.length; i++) {
-      if (categoriesData[i].category_id === ctg_id) {
-        currentCategoryId = i
-        break
+    let currentCategoryId = e.target.dataset.id
+    if (currentCategoryId >= 0 && ctg_id >= 0) {
+      //console.log(e.target.dataset.id + " | " + ctg_id)
+      if (categoriesData[currentCategoryId].active === true) {
+        e.target.style.backgroundColor = "rgb(100 116 139)"
+        categoriesData[currentCategoryId].active = false
+      } else {
+        e.target.style.backgroundColor = "rgb(71 85 105)"
+        categoriesData[currentCategoryId].active = true
       }
     }
-    if (categoriesData[currentCategoryId].active === true) {
-      document.getElementById("category_" + categoriesData[currentCategoryId].category_id).style.backgroundColor = "rgb(100 116 139)"
-      categoriesData[currentCategoryId].active = false
-    } else {
-      document.getElementById("category_" + categoriesData[currentCategoryId].category_id).style.backgroundColor = "rgb(71 85 105)"
-      categoriesData[currentCategoryId].active = true
-    }
-    console.log(e.target.id.split('_')[1])
   }
   function NextCat() {
     currentCatId.current = (parseInt(currentCatId.current) + 1)
@@ -72,7 +71,8 @@ const CheckCats = () => {
     }
   }
   function DeleteCat() {
-    console.log(categoriesData)
+    console.log(catInfoData)
+    ClearCategories()
   }
 
   return (
@@ -84,18 +84,21 @@ const CheckCats = () => {
           <img src={currentCatImage} alt="cat" className=" lg:max-h-100 w-full lg:w-auto"></img>
         </div>
         <div className="bg-slate-500 lg:overflow-y-auto ">
-          {(typeof categoriesData[0] == "undefined") ? (
-            <p>Loading...</p>
-            ) : (
-              categoriesData.map((item, index) => (
-                <div id={"category_" + item.category_id} data-active="0" onClick={OnCategoryClick} className=" w-full h-8 flex justify-center items-center hover:bg-slate-600 transition-all cursor-pointer" key={index}>
-                  {item.name}
-                </div>
-              ))
-          )}
+          <div className="grid grid-cols-2">
+            {(typeof categoriesData[0] == "undefined") ? (
+              <p>Loading...</p>
+              ) : (
+                categoriesData.map((item, index) => (
+                  <div id={"category_" + item.category_id} data-id={index} onClick={OnCategoryClick} 
+                    className=" w-full h-8 flex justify-center items-center hover:shadow-ctgHover transition-all cursor-pointer" key={index}>
+                    {item.name}
+                  </div>
+                ))
+            )}
+          </div>
 
-          <div className="h-96">{catInfoData === undefined ? "NoData" : catInfoData.age}</div>
-          <div className="h-96">sus</div>
+          <div className="h-10 flex items-center justify-center">{catInfoData === undefined ? "NoData" : catInfoData.age}</div>
+          <div className="h-10 flex items-center justify-center">{catInfoData === undefined ? "NoData" : (catInfoData.classification === null ? "No classification" : catInfoData.classification)}</div>
           <div className="h-96">sus</div>
           <div>sus</div>
         </div>
