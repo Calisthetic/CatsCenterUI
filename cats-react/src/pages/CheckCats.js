@@ -160,12 +160,13 @@ const CheckCats = () => {
             </div>
           ) : (
             <div className="flex items-center w-full justify-center mt-4 flex-col">
+              {/* Kitty */}
               <label className="relative inline-flex items-center mb-4 cursor-pointer">
                 <input ref={isKittyInputRef} onInput={OnKittyChanged} type="checkbox" value="" defaultChecked={catInfoData.is_kitty} className="sr-only peer"/>
                 <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 <span className="ml-3  font-medium text-gray-900 dark:text-gray-300">Is it Kitty?</span>
               </label>
-              
+              {/* Select breeds */}
               {breedsData !== undefined && (
                 <div className="w-11/12 my-2">
                   <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select breed</label>
@@ -183,7 +184,7 @@ const CheckCats = () => {
                   </select>
                 </div>
               )}
-              
+              {/* Select felids */}
               {felidsData !== undefined && (
                 <div className="w-11/12 my-2">
                   <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select felidae</label>
@@ -205,8 +206,9 @@ const CheckCats = () => {
           )}
         </div>
       </div>
+      {/* Footer buttons */}
       <div className="text-xl  dark:bg-Main h-auto flex gap-2 items-center justify-center">
-        <div onClick={PreviousCat} className="inline-flex items-center cursor-pointer p-2 sm:px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+        <div onClick={PreviousCat} className="inline-flex items-center select-none cursor-pointer p-2 sm:px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
           <svg aria-hidden="true" className="w-5 h-5 mr-2" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z"></path></svg>
           Previous
         </div>
@@ -216,7 +218,7 @@ const CheckCats = () => {
         <div className="inline-flex items-center cursor-pointer px-2 sm:px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00ff00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
         </div>
-        <div onClick={NextCat} className="inline-flex items-center cursor-pointer px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+        <div onClick={NextCat} className="inline-flex items-center select-none cursor-pointer px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
           Next
           <svg aria-hidden="true" className="w-5 h-5 ml-2" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"></path></svg>
         </div>
