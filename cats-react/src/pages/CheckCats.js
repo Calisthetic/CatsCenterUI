@@ -42,10 +42,10 @@ const CheckCats = () => {
     if (currentCategoryId >= 0 && ctg_id >= 0) {
       //console.log(e.target.dataset.id + " | " + ctg_id)
       if (categoriesData[currentCategoryId].active === true) {
-        e.target.style.backgroundColor = "rgb(100 116 139)"
+        e.target.style.backgroundColor = "rgb(24 24 27)"
         categoriesData[currentCategoryId].active = false
       } else {
-        e.target.style.backgroundColor = "rgb(71 85 105)"
+        e.target.style.backgroundColor = "rgb(40 43 49)"
         categoriesData[currentCategoryId].active = true
       }
     }
@@ -65,13 +65,13 @@ const CheckCats = () => {
   function ClearCategories() {
     for (let i = 0; i < categoriesData.length; i++) {
       if (categoriesData[i].active === true) {
-        document.getElementById("category_" + categoriesData[i].category_id).style.backgroundColor = "rgb(100 116 139)"
+        document.getElementById("category_" + categoriesData[i].category_id).style.backgroundColor = "rgb(24 24 27)"
         categoriesData[i].active = false
       }
     }
   }
   function DeleteCat() {
-    console.log(catInfoData.classification.name)
+    console.log(catInfoData)
     ClearCategories()
   }
 
@@ -80,37 +80,50 @@ const CheckCats = () => {
       <input ref={catIdRef} defaultValue="10000" onInput={OnCatIdChanged} type="text" 
         className=" h-12 w-screen text-xl focus:rounded-none text-center focus:border-0 focus:outline-none text-white bg-Main"></input>
       <div className=" grid grid-cols-1 grid-rows-checkCats lg:grid-rows-1 lg:grid-cols-checkCats h-full">
-        <div className="flex w-full items-center justify-center">
-          <img src={currentCatImage} alt="cat" className=" lg:max-h-100 w-full lg:w-auto"></img>
+        <div className="flex bg-gray-50 dark:bg-zinc-900 w-full items-center justify-center">
+          {(catInfoData === undefined || catInfoData.length === 0) ? 
+          (<div className="flex items-center justify-center w-full h-full bg-gray-50 dark:bg-zinc-900">
+            <div role="status">
+                <svg aria-hidden="true" className="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/><path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/></svg>
+                <span className="sr-only">Loading...</span>
+            </div>
+          </div>)
+          : (<img src={currentCatImage} alt="cat" className=" lg:max-h-100 w-full lg:w-auto"></img>)}
         </div>
-        <div className="bg-slate-500 lg:overflow-y-auto ">
+        <div className="dark:bg-zinc-900 dark:text-white border-l-4 border-Main lg:overflow-y-auto ">
           <div className="grid grid-cols-2">
-            {(typeof categoriesData[0] == "undefined") ? (
-              <p>Loading...</p>
+            {(categoriesData.length === 1 || categoriesData === undefined) ? (
+              <div></div>
               ) : (
                 categoriesData.map((item, index) => (
                   <div id={"category_" + item.category_id} data-id={index} onClick={OnCategoryClick} 
-                    className=" w-full h-8 flex justify-center items-center hover:shadow-ctgHover transition-all cursor-pointer" key={index}>
+                    className=" select-none w-full h-8 flex justify-center items-center hover:shadow-ctgHover hover:dark:shadow-ctgHoverDark transition-all cursor-pointer" key={index}>
                     {item.name}
                   </div>
                 ))
             )}
           </div>
-
-          <div className="h-10 flex items-center justify-center">{catInfoData === undefined ? "NoData" : catInfoData.age}</div>
-          <div className="h-10 flex items-center justify-center">
-            {catInfoData === undefined ? "No data" : 
-              (catInfoData.classification === undefined ? "No data" : 
-              (catInfoData.classification === null ? "No classification" : catInfoData.classification.name))}
-          </div>
-          <div className="h-96">sus</div>
-          <div className="h-96">sus</div>
-          <div className="h-96">sus</div>
-          <div className="h-96">sus</div>
-          <div>sus</div>
+          {(catInfoData.length === 0 || catInfoData === undefined) ? (
+            <div className=" w-full flex gap-3 flex-col h-full justify-center">
+              <div className="px-3 py-1 text-xs font-medium leading-none text-center h-5 mx-2 text-blue-800 bg-blue-200 rounded-full w-3/4 animate-pulse dark:bg-slate-800 dark:text-blue-200"></div>
+              <div className="px-3 py-1 text-xs font-medium leading-none text-center h-5 mx-4 text-blue-800 bg-blue-200 rounded-full w-2/3 animate-pulse dark:bg-slate-800 dark:text-blue-200"></div>
+              <div className="px-3 py-1 text-xs font-medium leading-none text-center h-5 mx-6 text-blue-800 bg-blue-200 rounded-full w-5/6 animate-pulse dark:bg-slate-800 dark:text-blue-200"></div>
+              <div className="px-3 py-1 text-xs font-medium leading-none text-center h-5 mx-2 text-blue-800 bg-blue-200 rounded-full w-8/12 animate-pulse dark:bg-slate-800 dark:text-blue-200"></div>
+              <div className="px-3 py-1 text-xs font-medium leading-none text-center h-5 mx-4 text-blue-800 bg-blue-200 rounded-full w-9/12 animate-pulse dark:bg-slate-800 dark:text-blue-200"></div>
+            </div>
+          ) : (
+            <div>
+              <div className="h-10 flex items-center justify-center">{catInfoData === undefined ? "NoData" : catInfoData.age}</div>
+              <div className="h-10 flex items-center justify-center">
+                {catInfoData === undefined ? "No data" : 
+                  (catInfoData.classification === undefined ? "No data" : 
+                  (catInfoData.classification === null ? "No classification" : catInfoData.classification.name))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
-      <div className="text-xl bg-slate-600 h-auto flex gap-2 items-center justify-center">
+      <div className="text-xl  dark:bg-Main h-auto flex gap-2 items-center justify-center">
         <div onClick={PreviousCat} className="inline-flex items-center cursor-pointer p-2 sm:px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
           <svg aria-hidden="true" className="w-5 h-5 mr-2" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z"></path></svg>
           Previous

@@ -6,7 +6,7 @@ module.exports = {
   theme: {
     extend: {
       colors:{
-        'Main': '#FABC34',
+        'Main': '#20232b',
       },
       maxHeight: {
         100: 'calc(100vh - 100px)'
@@ -27,6 +27,7 @@ module.exports = {
       },
       boxShadow: {
         'ctgHover': "0px 0px 3px 0px rgba(0, 0, 0, 0.7) inset",
+        'ctgHoverDark': "0px 0px 3px 0px rgba(255, 255, 255, 0.7) inset",
       }
     },
   },
