@@ -8,7 +8,7 @@ const CheckCats = () => {
   const catIdRef = useRef();
   
   const [currentCatImage, setCurrentCatImage] = useState(apiUrl + "Cats/" + currentCatId.current + ".jpeg");
-  const [catInfoData, setCatInfoData] = useState([{}]);
+  let [catInfoData, setCatInfoData] = useState([]);
   useEffect(() => {
     fetch(apiUrl + "Cats/Info/" + currentCatId.current, {method: 'GET'})
     .then(response => response.json())
@@ -19,7 +19,7 @@ const CheckCats = () => {
   useEffect(() => {
     fetch(apiUrl + "Classifications/ctg", {method: 'GET'})
     .then(response => response.json())
-    .then(data => {let obg = {active: false} ;data.map((item) => item = Object.assign(item, obg)) ;setCategoriesData(data)})
+    .then(data => {let obg = {active: false}; data.map((item) => item = Object.assign(item, obg)); setCategoriesData(data)})
   }, []);
 
   async function RefreshCat() {
@@ -71,7 +71,7 @@ const CheckCats = () => {
     }
   }
   function DeleteCat() {
-    console.log(catInfoData)
+    console.log(catInfoData.classification.name)
     ClearCategories()
   }
 
@@ -98,7 +98,14 @@ const CheckCats = () => {
           </div>
 
           <div className="h-10 flex items-center justify-center">{catInfoData === undefined ? "NoData" : catInfoData.age}</div>
-          <div className="h-10 flex items-center justify-center">{catInfoData === undefined ? "NoData" : (catInfoData.classification === null ? "No classification" : catInfoData.classification)}</div>
+          <div className="h-10 flex items-center justify-center">
+            {catInfoData === undefined ? "No data" : 
+              (catInfoData.classification === undefined ? "No data" : 
+              (catInfoData.classification === null ? "No classification" : catInfoData.classification.name))}
+          </div>
+          <div className="h-96">sus</div>
+          <div className="h-96">sus</div>
+          <div className="h-96">sus</div>
           <div className="h-96">sus</div>
           <div>sus</div>
         </div>
