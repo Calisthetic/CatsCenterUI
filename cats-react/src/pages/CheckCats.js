@@ -5,7 +5,7 @@ const apiUrl = "https://localhost:7288/api/"
 const CheckCats = () => {
 
   let currentCatId = useRef(6881);
-  const catIdRef = useRef();
+  const catIdInputRef = useRef();
   const isKittyInputRef = useRef();
   const isKittyRef = useRef(false)
   const breedInputRef = useRef();
@@ -55,8 +55,18 @@ const CheckCats = () => {
         .then(json => {
           setCatInfoData(json); 
           isKittyRef.current = json.is_kitty;
-          breedRef.current = json.classification !== null ? (json.classification.type !== "Felidae" ? json.classification.name : "felidae") : "select"
-          felidaeRef.current = json.classification !== null ? (json.classification.type !== "Breed" ? json.classification.name : "breed") : "select"
+          breedRef.current = json.classification !== null && json.classification !== undefined ? (json.classification.type !== "Felidae" ? json.classification.name : "felidae") : "select"
+          felidaeRef.current = json.classification !== null && json.classification !== undefined ? (json.classification.type !== "Breed" ? json.classification.name : "breed") : "select"
+          
+          ClearCategories()
+          for (let i = 0; i < json.categories.length; i++) {
+            for (let j = 0; j < categoriesData.length; j++) {
+              if (categoriesData[j].category_id === json.categories[i].category_id) {
+                document.getElementById("category_" + categoriesData[j].category_id).style.backgroundColor = "rgb(40 43 49)"
+                categoriesData[j].active = true
+              }
+            }
+          }
         })
         .catch(error => console.log('Failed: ' + error.message));
       setCurrentCatImage(apiUrl + "Cats/" + currentCatId.current + ".jpeg")
@@ -66,7 +76,7 @@ const CheckCats = () => {
     }
   }
   function OnCatIdChanged() {
-    currentCatId.current = (parseInt(catIdRef.current.value))
+    currentCatId.current = parseInt(catIdInputRef.current.value)
     RefreshCat()
   }
   function OnCategoryClick(e) {
@@ -84,15 +94,13 @@ const CheckCats = () => {
   }
   function NextCat() {
     currentCatId.current = (parseInt(currentCatId.current) + 1)
-    catIdRef.current.value = currentCatId.current
+    catIdInputRef.current.value = currentCatId.current
     RefreshCat()
-    ClearCategories()
   }
   function PreviousCat() {
     currentCatId.current = (parseInt(currentCatId.current) - 1)
-    catIdRef.current.value = currentCatId.current
+    catIdInputRef.current.value = currentCatId.current
     RefreshCat()
-    ClearCategories()
   }
   // After next/previous/delete car
   function ClearCategories() {
@@ -104,18 +112,51 @@ const CheckCats = () => {
     }
   }
   function DeleteCat() {
-    console.log(catInfoData)
-    ClearCategories()
-    NextCat()
+    let categotyIds = []
+    for (let i = 0; i < categoriesData.length; i++) {
+      if (categoriesData[i].active === true) {
+        categotyIds.push(categoriesData[i].category_id)
+      }
+    }
+    console.log(categotyIds)
+    //NextCat()
   }
-  function OnKittyChanged() {
-    console.log(isKittyInputRef.current.checked)
+  async function SaveCat() {
+    let categotyIds = []
+    for (let i = 0; i < categoriesData.length; i++) {
+      if (categoriesData[i].active === true) {
+        categotyIds.push(categoriesData[i].category_id)
+      }
+    }
+    
+    let felidaeId = parseInt(felidaeInputRef.current.options[felidaeInputRef.current.selectedIndex].dataset.id)
+    let breedId = parseInt(breedInputRef.current.options[breedInputRef.current.selectedIndex].dataset.id)
+    let body = {
+      "cat_id": currentCatId.current,
+      "classification_id": breedId > -1 ? breedId : (
+          felidaeId > -1 ? felidaeId : null
+        ),
+      "added_user_id": 1,
+      "is_kitty": isKittyInputRef.current.checked,
+      "approved": true,
+      "category_ids": categotyIds
+    }
+    await fetch(apiUrl + "Cats/" + currentCatId.current, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).catch(error => console.log('Failed to save cat: ' + error.message));
+    console.log(JSON.stringify(body))
+    //ClearCategories()
+    //NextCat()
   }
 
   return (
     <div className=" grid grid-rows-checkCatsLG grid-cols-1 w-full overflow-x-hidden h-auto min-h-screen lg:h-screen lg:overflow-hidden">
       {/* Header */}
-      <input ref={catIdRef} defaultValue={currentCatId.current} onInput={OnCatIdChanged} type="text" 
+      <input ref={catIdInputRef} defaultValue={currentCatId.current} onInput={OnCatIdChanged} type="text" 
         className=" h-12 w-screen text-xl focus:rounded-none text-center focus:border-0 focus:outline-none text-white bg-Main"></input>
 
       {/* Main grid - 2 cols */}
@@ -162,7 +203,7 @@ const CheckCats = () => {
             <div className="flex items-center w-full justify-center mt-4 flex-col">
               {/* Kitty */}
               <label className="relative inline-flex items-center mb-4 cursor-pointer">
-                <input ref={isKittyInputRef} onInput={OnKittyChanged} type="checkbox" value="" defaultChecked={catInfoData.is_kitty} className="sr-only peer"/>
+                <input ref={isKittyInputRef} type="checkbox" value="" defaultChecked={catInfoData.is_kitty} className="sr-only peer"/>
                 <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 <span className="ml-3  font-medium text-gray-900 dark:text-gray-300">Is it Kitty?</span>
               </label>
@@ -170,7 +211,11 @@ const CheckCats = () => {
               {breedsData !== undefined && (
                 <div className="w-11/12 my-2">
                   <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select breed</label>
-                  <select ref={breedInputRef} id="countries" defaultValue="select" className="bg-gray-50 border transition-all border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                  <select ref={breedInputRef} id="countries" defaultValue={
+                    catInfoData.classification !== null && catInfoData.classification !== undefined ? (
+                      catInfoData.classification.type === "Breed" ? catInfoData.classification.name : "felidae"
+                    ) : "select"
+                  } className="bg-gray-50 border transition-all border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     {breedsData.sort((a, b) => {
                       if (a.name > b.name) {
                         return 1;
@@ -188,7 +233,11 @@ const CheckCats = () => {
               {felidsData !== undefined && (
                 <div className="w-11/12 my-2">
                   <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select felidae</label>
-                  <select ref={felidaeInputRef} id="countries" defaultValue="select" className="bg-gray-50 border transition-all border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                  <select ref={felidaeInputRef} id="countries" defaultValue={
+                    catInfoData.classification !== null && catInfoData.classification ? (
+                      catInfoData.classification.type === "Felidae" ? catInfoData.classification.name : "breed"
+                    ) : "select"
+                  } className="bg-gray-50 border transition-all border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     {felidsData.sort((a, b) => {
                       if (a.name > b.name) {
                         return 1;
@@ -215,7 +264,7 @@ const CheckCats = () => {
         <div onClick={DeleteCat} className="inline-flex items-center cursor-pointer px-2 sm:px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
         </div>
-        <div className="inline-flex items-center cursor-pointer px-2 sm:px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700">
+        <div onClick={SaveCat} className="inline-flex items-center cursor-pointer px-2 sm:px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00ff00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
         </div>
         <div onClick={NextCat} className="inline-flex items-center select-none cursor-pointer px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
