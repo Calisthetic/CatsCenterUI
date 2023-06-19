@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
-const apiUrl = "https://localhost:7288/api/"
+//const apiUrl = "https://localhost:7288/api/"
+const apiUrl = "https://vwqp58gw-7288.euw.devtunnels.ms/api/"
 
 const CheckCats = () => {
 
